@@ -1,9 +1,8 @@
 import { useSelector } from "react-redux";
+import { selectAllPosts } from "./postSlice";
 
-import React from "react";
-
-const postList = () => {
-  const posts = useSelector((state) => state.posts);
+const PostList = () => {
+  const posts = useSelector(selectAllPosts); //shape of the state changes we just need to change it in the slice
 
   const renderedPosts = posts.map((post) => (
     <article key={post.id}>
@@ -20,4 +19,4 @@ const postList = () => {
   );
 };
 
-export default postList;
+export default PostList;
