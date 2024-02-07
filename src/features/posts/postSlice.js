@@ -13,15 +13,39 @@ const initialState = [
   },
 ];
 
+{
+  /*without duplicating logic in every component we use prepae call back */
+}
+{
+  /**
+  prepare call back,
+        generate uniique ids,
+        format the data,
+        return the object with the payload 
+*/
+}
+
 const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
     //reducer function to handle the data we submit
-    postAdded(state, action) {
-      state.push(action.payload); //here not mutating the state, immer js useage
-      //here not mutating the state immer js creates new state underneath
-      //this will work only inside createSlice
+    postAdded: {
+      reducer(state, action) {
+        state.push(action.payload); //here not mutating the state, immer js useage
+        //here not mutating the state immer js creates new state underneath
+        //this will work only inside createSlice
+      },
+      prepare(title, content, userId) {
+        return {
+          payload: {
+            id: nanoid(),
+            title,
+            content,
+            userId,
+          },
+        };
+      },
     },
   },
 });

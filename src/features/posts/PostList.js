@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { selectAllPosts } from "./postSlice";
+import PostAuthor from "./PostAuthor";
 
 const PostList = () => {
   const posts = useSelector(selectAllPosts); //shape of the state changes we just need to change it in the slice
@@ -8,6 +9,9 @@ const PostList = () => {
     <article key={post.id}>
       <h3>{post.title}</h3>
       <p>{post.content.substring(0, 100)}</p>
+      <p className="postCredit">
+        <PostAuthor userId={post.userId} />
+      </p>
     </article>
   ));
 
