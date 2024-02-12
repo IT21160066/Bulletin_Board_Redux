@@ -16,6 +16,11 @@ const AddPostForm = () => {
   const onContentChanged = (e) => setContent(e.target.value);
   const onAuthorChanged = (e) => setUserId(e.target.value);
 
+  /*In Redux, the term "dispatch" refers to the process of sending an action to the store. 
+  The store is a central repository that holds the state of your application. 
+  Actions are plain JavaScript objects that describe changes in the application's state. 
+  The process of dispatching an action is a crucial part of the Redux workflow. */
+
   const onSavePostClicked = () => {
     if (title && content) {
       dispatch(postAdded(title, content, userId), setTitle(""), setContent(""));
