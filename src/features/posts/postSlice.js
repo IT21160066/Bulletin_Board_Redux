@@ -7,7 +7,7 @@ const POSTS_URL = "https://jsonplaceholder.typicode.com/posts";
 const initialState = {
   posts: [],
   status: "idle", //idle, loading, succeeded, failed
-  errror: null,
+  error: null,
 };
 
 //prefix for the genrated action type
@@ -18,6 +18,14 @@ export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
   const response = await axios.get(POSTS_URL);
   return response.data;
 });
+
+export const addNewPost = createAsyncThunk(
+  "posts/addNewPost",
+  async (initialState) => {
+    const response = await axios.post(POSTS_URL, initialState);
+    return response.data;
+  }
+);
 
 {
   /*without duplicating logic in every component we use prepae call back */
@@ -83,7 +91,7 @@ const postsSlice = createSlice({
             wow: 0,
             heart: 0,
             rocket: 0,
-            coffee: 0,
+            coffe: 0,
           };
           return post;
         });
@@ -94,6 +102,19 @@ const postsSlice = createSlice({
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        action.payload.userId = Number(action.payload.userId);
+        action.payload.date = new Date().toISOString();
+        action.payload.reactions = {
+          thumbsUp: 0,
+          wow: 0,
+          heart: 0,
+          rocket: 0,
+          coffe: 0,
+        };
+        console.log(action.payload);
+        state.posts.push(action.payload);
       });
   },
 });
