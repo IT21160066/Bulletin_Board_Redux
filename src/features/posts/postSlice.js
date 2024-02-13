@@ -43,12 +43,9 @@ const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
-    //reducer function to handle the data we submit
     postAdded: {
       reducer(state, action) {
-        state.posts.push(action.payload); //here not mutating the state, immer js useage
-        //here not mutating the state immer js creates new state underneath
-        //this will work only inside createSlice
+        state.posts.push(action.payload);
       },
       prepare(title, content, userId) {
         return {
@@ -63,7 +60,7 @@ const postsSlice = createSlice({
               wow: 0,
               heart: 0,
               rocket: 0,
-              coffe: 0,
+              coffee: 0,
             },
           },
         };
@@ -71,8 +68,10 @@ const postsSlice = createSlice({
     },
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload;
-      const exsistingPost = state.posts.find((post) => post.id === postId);
-      if (exsistingPost) exsistingPost.reactions[reaction]++;
+      const existingPost = state.posts.find((post) => post.id === postId);
+      if (existingPost) {
+        existingPost.reactions[reaction]++;
+      }
     },
   },
   extraReducers(builder) {
@@ -91,7 +90,7 @@ const postsSlice = createSlice({
             wow: 0,
             heart: 0,
             rocket: 0,
-            coffe: 0,
+            coffee: 0,
           };
           return post;
         });
@@ -104,6 +103,18 @@ const postsSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(addNewPost.fulfilled, (state, action) => {
+        // Fix for API post IDs:
+        // Creating sortedPosts & assigning the id
+        // would be not be needed if the fake API
+        // returned accurate new post IDs
+        const sortedPosts = state.posts.sort((a, b) => {
+          if (a.id > b.id) return 1;
+          if (a.id < b.id) return -1;
+          return 0;
+        });
+        action.payload.id = sortedPosts[sortedPosts.length - 1].id + 1;
+        // End fix for fake API post IDs
+
         action.payload.userId = Number(action.payload.userId);
         action.payload.date = new Date().toISOString();
         action.payload.reactions = {
@@ -111,7 +122,7 @@ const postsSlice = createSlice({
           wow: 0,
           heart: 0,
           rocket: 0,
-          coffe: 0,
+          coffee: 0,
         };
         console.log(action.payload);
         state.posts.push(action.payload);
