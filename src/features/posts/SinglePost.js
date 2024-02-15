@@ -7,7 +7,8 @@ import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const SinglePost = () => {
-  const post = useSelector((state) => selectPostById(state, postId));
+  const { postId } = useParams();
+  const post = useSelector((state) => selectPostById(state, Number(postId)));
   if (!post) {
     return (
       <section>
