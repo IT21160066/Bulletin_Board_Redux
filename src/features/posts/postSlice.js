@@ -15,9 +15,20 @@ const initialState = {
 //function should return a promise that contains some data or rejected promise with an error
 
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
+  //the payload creator function
   const response = await axios.get(POSTS_URL);
   return response.data;
 });
+
+// 1st argument - action type prefix
+// This is used to generate unique action types for this async thunk.
+//It helps differentiate actions related to fetching posts from other actions in the application.
+
+/**This async thunk can be dispatched like any other action in Redux. When dispatched, 
+ * it will trigger the asynchronous logic defined in the payload creator function.
+Redux Toolkit's createAsyncThunk automatically generates three action types: 
+<actionTypePrefix>/pending, <actionTypePrefix>/fulfilled, and <actionTypePrefix>/rejected. 
+These action types represent the different stages of the async operation (pending, fulfilled with data, or rejected with an error). */
 
 export const addNewPost = createAsyncThunk(
   "posts/addNewPost",
@@ -27,27 +38,46 @@ export const addNewPost = createAsyncThunk(
   }
 );
 
-{
-  /*without duplicating logic in every component we use prepae call back */
-}
-{
-  /**
+//epresents the initial data or payload that you want to send to the server when creating a new post.
+
+/*The second argument to axios.post is initialState,
+which presumably contains the data for the new post to be added.*/
+
+/**In the provided example, the action type prefix is "posts/addNewPost".
+ * This prefix helps to differentiate actions related to adding new posts
+ * from actions related to other parts of the application. By including a
+ * specific prefix related to the feature or slice of state being managed
+ * (in this case, "posts"), it ensures that the generated action types are
+ * unique and specific to the async thunk being created. */
+
+//Action types are typically strings that describe the action being performed
+//in a Redux application.
+
+/*The return value of the payload creator function is a promise. 
+This promise resolves with the data returned by the API (response.data) when the HTTP request is successful.
+If there is an error during the HTTP request, the promise will be rejected with an error.*/
+
+/*without duplicating logic in every component we use prepae call back */
+
+/**
   prepare call back,
         generate uniique ids,
         format the data,
         return the object with the payload 
 */
-}
 
 const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
     postAdded: {
+      // This is a reducer function that handles adding a new post to the state
       reducer(state, action) {
+        // this is the actual function that modifies the state.
         state.posts.push(action.payload);
       },
       prepare(title, content, userId) {
+        // This is a function that prepares the payload for the postAdded action.
         return {
           payload: {
             id: nanoid(),
@@ -67,6 +97,7 @@ const postsSlice = createSlice({
       },
     },
     reactionAdded(state, action) {
+      // This is a reducer function that handles adding reactions to a post
       const { postId, reaction } = action.payload;
       const existingPost = state.posts.find((post) => post.id === postId);
       if (existingPost) {
@@ -74,6 +105,8 @@ const postsSlice = createSlice({
       }
     },
   },
+  /**extraReducers is a function provided by createSlice that allows adding additional case reducers to handle actions outside of the slice itself.
+   * It takes a single argument builder, which is an object that lets us define case reducers. */
   extraReducers(builder) {
     builder
       .addCase(fetchPosts.pending, (state, action) => {
@@ -153,3 +186,5 @@ export default postsSlice.reducer;
 
 /**builder parameter is an object that let us define additional case reducers that run in response to the
  * actions defined outside of the slice*/
+
+//createAsyncThunk: Handles asynchronous actions like fetching and adding posts
